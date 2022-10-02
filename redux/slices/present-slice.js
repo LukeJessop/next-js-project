@@ -5,7 +5,14 @@ const presentSlice = createSlice({
   initialState: [],
   reducers: {
     addToPresent: (state, action) => {
-      state.push(action.payload[action.payload.length - 1]);
+      if(typeof(action.payload) == 'string'){
+        state.push(action.payload);
+      }
+      for(let i = 0; i < action.payload.length; i++){
+        if(state.length < action.payload.length){
+          state.push(action.payload[i]);
+        }
+      }
     },
     removeFromPresent: (state) => {
       state.pop();

@@ -1,23 +1,25 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import HomePage from './[submissionsId]';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch} from 'react-redux'
-import {getPresentTable} from '../redux/slices/past-present-actions'
+import { getPresentTable } from "../redux/slices/past-present-actions";
 
-function Index() {
+function Index(props) {
+  const presentState = useSelector((state) => state.present);
+  
   const dispatch = useDispatch()
   const router = useRouter()
   useEffect(() => {
     dispatch(getPresentTable())
-  },[])
-  
-  const pushToPath = (arr) => {
-    for(let i = 0; i < arr.length; i++){
-      router.push(arr[i])
-      console.log('I equals: ' + arr[i])
+    if(props.stateIsSet === false){
+      props.setStateIsSet(true)
+      console.log(presentState)
+      router.push(`-`)
     }
-  }
+  },[presentState])
 
+
+  
   return (
     <Fragment>
       <HomePage />

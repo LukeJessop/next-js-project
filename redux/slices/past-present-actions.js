@@ -1,5 +1,4 @@
 import { pastActions } from "./past-slice";
-import axios from "axios";
 import { presentActions } from "./present-slice";
 
 export const addToPresentTable = (presentArr) => {
@@ -19,8 +18,9 @@ export const addToPresentTable = (presentArr) => {
 
     try {
       const presentData = await uploadData();
-      console.log(presentData);
-      dispatch(presentActions.addToPresent(presentArr));
+      if (presentData) {
+        dispatch(presentActions.addToPresent(presentArr));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -29,20 +29,33 @@ export const addToPresentTable = (presentArr) => {
 
 export const getPresentTable = () => {
   return async (dispatch) => {
-    const response = async () => {
-      axios
-        .get(
-          "https://next-js-da535-default-rtdb.firebaseio.com/present/array.json"
-        )
-        .then((res) => {
-            if(res.data){
-                dispatch(presentActions.addToPresent(res.data));
-            }
-        })
-        .catch((err) => console.log(err));
+    const presentResponse = async () => {
+      const response = await fetch(
+        "https://next-js-da535-default-rtdb.firebaseio.com/present/array.json"
+      );
+      const data = await response.json();
+      return data;
     };
 
-    await response();
+    const pastResponse = async () => {
+      const response = await fetch(
+        "https://next-js-da535-default-rtdb.firebaseio.com/past/array.json"
+      );
+      const data = await response.json();
+      return data;
+    };
+    try {
+      const presentData = await presentResponse();
+      const pastData = await pastResponse();
+      if (presentData) {
+        dispatch(presentActions.addToPresent(presentData));
+      }
+      if (pastData) {
+        dispatch(pastActions.addToPast(pastData));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 };
 
@@ -65,8 +78,9 @@ export const addToPastTable = (pastArr) => {
 
     try {
       const presentData = await uploadData();
-      console.log(presentData);
-      dispatch(pastActions.addToPast(presentData));
+      if (presentData) {
+        dispatch(pastActions.addToPast(presentData));
+      }
     } catch (error) {
       console.log(error);
     }
